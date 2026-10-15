@@ -7,7 +7,9 @@ Portal, automação e documentação para executar localmente um servidor Emeral
 ## O que está incluído
 
 - site responsivo para os jogadores;
-- inicializador único para MySQL, AuthServer e WorldServer;
+- instalador/inicializador portátil de um único BAT;
+- download do runtime com verificação SHA-256 e instalação persistente;
+- importação local sem alterar o repack original;
 - detecção automática do IP Tailscale;
 - backup automático do banco `auth` antes de alterar o realm;
 - atualização automática de `auth.realmlist`;
@@ -17,14 +19,13 @@ Portal, automação e documentação para executar localmente um servidor Emeral
 
 ## Início rápido para o dono do servidor
 
-1. Baixe ou clone este repositório.
-2. Copie `servidor/ABRIR_EMERALD_ONLINE.bat` para a raiz do seu repack.
-3. Copie `servidor/configuracao-servidor.exemplo.cmd` com o nome `configuracao-servidor.cmd`.
-4. Edite `configuracao-servidor.cmd` e coloque os dados do MySQL do seu repack.
-5. Instale o [Tailscale para Windows](https://tailscale.com/download/windows) e faça login.
-6. Execute `ABRIR_EMERALD_ONLINE.bat`.
-7. Na página Machines do Tailscale, compartilhe somente a máquina do servidor com o jogador.
-8. Envie ao jogador o convite e o conteúdo de `REALMLIST_PARA_JOGADORES.txt`.
+1. Baixe `INSTALAR_E_ABRIR_EMERALD.bat` no Release mais recente.
+2. Execute o BAT. Ele baixa o runtime, verifica o SHA-256 e instala em `%LOCALAPPDATA%\EmeraldI80`.
+3. Na primeira execução, aguarde o download verificado do pacote completo do servidor.
+4. Aguarde a extração, a criação do banco limpo e a validação de MySQL, AuthServer e WorldServer.
+5. Nas execuções seguintes, abra o mesmo BAT; o download e a importação não serão repetidos.
+
+O pacote não contém logs, backups, banco em uso, contas, personagens, binlogs ou símbolos de depuração. Veja [a documentação completa](docs/INSTALADOR-PORTATIL.md).
 
 ## Para o jogador
 
@@ -62,6 +63,7 @@ Vercel e GitHub Pages hospedam o portal, não o servidor WoW. O protocolo do jog
 - Nunca publique `configuracao-servidor.cmd`.
 - Nunca publique `_Server/mysql/data`, pois contém contas e personagens.
 - Nunca publique backups ou logs.
+- O Release contém somente scripts, documentação e metadados do runtime; arquivos de terceiros são importados localmente.
 - Compartilhe somente a máquina do servidor no Tailscale.
 - Revogue o compartilhamento quando uma pessoa não precisar mais do acesso.
 
@@ -70,6 +72,10 @@ Vercel e GitHub Pages hospedam o portal, não o servidor WoW. O protocolo do jog
 ```text
 emerald-i80-community/
 ├── .github/workflows/pages.yml
+├── INSTALAR_E_ABRIR_EMERALD.bat
+├── release/
+│   ├── LEIA-ME.txt
+│   └── runtime-manifest.txt
 ├── servidor/
 │   ├── ABRIR_EMERALD_ONLINE.bat
 │   └── configuracao-servidor.exemplo.cmd
@@ -79,6 +85,7 @@ emerald-i80-community/
 │   ├── app.js
 │   └── vercel.json
 ├── docs/
+│   ├── INSTALADOR-PORTATIL.md
 │   ├── JOGADOR-PC-E-WINLATOR.md
 │   └── PUBLICAR-SITE.md
 ├── .gitignore

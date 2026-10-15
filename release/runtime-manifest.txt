@@ -1,0 +1,7 @@
+Emerald i80 Community Runtime
+version=1.1.0
+distribution=bootstrap-runtime
+downloads-server-package=true
+requires-local-repack=false
+contains-private-database-data=false
+contains-game-client=false

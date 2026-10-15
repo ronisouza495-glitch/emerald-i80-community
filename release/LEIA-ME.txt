@@ -1,0 +1,12 @@
+EMERALD I80 COMMUNITY RUNTIME 1.1.0
+
+Este pequeno pacote contem os metadados e a documentacao do instalador.
+O BAT baixa separadamente o pacote verificado do servidor. O cliente World of
+Warcraft nao esta incluido. Contas, personagens, logs, backups e segredos da
+instalacao original tambem nao estao incluidos.
+
+Use INSTALAR_E_ABRIR_EMERALD.bat. Na primeira execucao, o instalador solicita
+o pacote do servidor pelo GitHub Release. A instalacao persistente fica em
+D:\EmeraldI80 quando D: existir, ou em %%LOCALAPPDATA%%\EmeraldI80.
+
+Projeto: https://github.com/ronilsondesouza045-beep/emerald-i80-community
