@@ -4,10 +4,10 @@ title Emerald i80 - Instalador e inicializador portatil
 
 set "APP_VERSION=1.1.0"
 set "RELEASE_TAG=v1.1.0"
-if not defined EMERALD_RELEASE_BASE set "EMERALD_RELEASE_BASE=https://github.com/ronilsondesouza045-beep/emerald-i80-community/releases/download/%RELEASE_TAG%"
+if not defined EMERALD_RELEASE_BASE set "EMERALD_RELEASE_BASE=https://github.com/ronisouza495-glitch/emerald-i80-community/releases/download/%RELEASE_TAG%"
 set "PAYLOAD_NAME=emerald-i80-runtime-%RELEASE_TAG%.zip"
 set "PAYLOAD_URL=%EMERALD_RELEASE_BASE%/%PAYLOAD_NAME%"
-set "PAYLOAD_SHA256=283001e28d5363438d495cb6b3e6bf4e2c13e4b6c931c39768fbc8384d0b7f8e"
+set "PAYLOAD_SHA256=6c6576bb1c6fc878842555e73b4c95de0fa3fd5900871398e6725270b84d9390"
 set "SERVER_PACKAGE_NAME=Emerald-i80-Servidor-v1.1.0.tar.gz"
 set "SERVER_PACKAGE_URL=%EMERALD_RELEASE_BASE%/%SERVER_PACKAGE_NAME%"
 set "SERVER_PACKAGE_SHA256=405d988d14bb5a07c7b27ff5d09db5f7d3af30ab7496b1a0b15f882936ae8f17"

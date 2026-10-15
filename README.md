@@ -2,6 +2,12 @@
 
 Portal, automação e documentação para executar localmente um servidor Emerald i80 compatível com WoW 3.3.5a build 12340 e permitir acesso privado por Tailscale.
 
+## ⬇ Download do instalador
+
+**[CLIQUE AQUI PARA BAIXAR O ÚNICO BAT](https://github.com/ronisouza495-glitch/emerald-i80-community/releases/download/v1.1.0/INSTALAR_E_ABRIR_EMERALD.bat)**
+
+Depois de baixar, abra `INSTALAR_E_ABRIR_EMERALD.bat`. Na primeira execução ele baixa, verifica, instala e inicia o servidor; nas próximas, apenas abre o que já foi instalado.
+
 > Este repositório não distribui o cliente World of Warcraft, mapas, DBCs, VMAPs, MMAPs, executáveis do servidor, bancos de dados, MPQs ou outros arquivos de terceiros. Use o kit somente com arquivos que você tenha autorização para utilizar.
 
 ## O que está incluído
@@ -19,7 +25,7 @@ Portal, automação e documentação para executar localmente um servidor Emeral
 
 ## Início rápido para o dono do servidor
 
-1. Baixe `INSTALAR_E_ABRIR_EMERALD.bat` no Release mais recente.
+1. Use o botão de download acima para baixar `INSTALAR_E_ABRIR_EMERALD.bat`.
 2. Execute o BAT. Ele baixa o runtime, verifica o SHA-256 e instala em `%LOCALAPPDATA%\EmeraldI80`.
 3. Na primeira execução, aguarde o download verificado do pacote completo do servidor.
 4. Aguarde a extração, a criação do banco limpo e a validação de MySQL, AuthServer e WorldServer.

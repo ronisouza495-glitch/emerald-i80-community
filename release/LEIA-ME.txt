@@ -9,4 +9,4 @@ Use INSTALAR_E_ABRIR_EMERALD.bat. Na primeira execucao, o instalador solicita
 o pacote do servidor pelo GitHub Release. A instalacao persistente fica em
 D:\EmeraldI80 quando D: existir, ou em %%LOCALAPPDATA%%\EmeraldI80.
 
-Projeto: https://github.com/ronilsondesouza045-beep/emerald-i80-community
+Projeto: https://github.com/ronisouza495-glitch/emerald-i80-community
