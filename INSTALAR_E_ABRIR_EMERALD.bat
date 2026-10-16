@@ -110,16 +110,13 @@ exit /b 1
 :download_server_package
 echo.
 echo [3/4] Baixando o servidor completo. Isso pode demorar...
+call :prepare_server_directory
+if errorlevel 1 exit /b 21
 powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$destination=$env:INSTALL_ROOT; $root=[IO.Path]::GetPathRoot([IO.Path]::GetFullPath($destination)); $free=([IO.DriveInfo]::new($root)).AvailableFreeSpace; $needed=6GB; Write-Host ('Necessario: {0:N2} GiB; livre: {1:N2} GiB' -f ($needed/1GB),($free/1GB)); if($free -lt $needed){exit 2}"
 if errorlevel 1 (
   echo [ERRO] Sao necessarios pelo menos 6 GiB livres para baixar e instalar.
   echo Libere espaco ou defina EMERALD_INSTALL_ROOT em outra unidade.
   exit /b 26
-)
-if exist "%SERVER_DIR%" (
-  echo [ERRO] Ja existe uma instalacao parcial em %SERVER_DIR%.
-  echo Renomeie-a para preservar os dados e execute novamente.
-  exit /b 21
 )
 set "SERVER_PACKAGE_FILE=%DOWNLOAD_DIR%\%SERVER_PACKAGE_NAME%"
 if exist "%SERVER_PACKAGE_FILE%" del /q "%SERVER_PACKAGE_FILE%"
@@ -137,9 +134,16 @@ if /I not "%SERVER_DOWNLOADED_SHA%"=="%SERVER_PACKAGE_SHA256%" (
   exit /b 23
 )
 mkdir "%SERVER_DIR%"
+>"%SERVER_DIR%\.emerald-installing" echo Instalacao incompleta de %APP_VERSION%. Pode ser removida automaticamente.
 tar.exe -xzf "%SERVER_PACKAGE_FILE%" -C "%SERVER_DIR%" --strip-components 1
-if errorlevel 1 exit /b 24
-for %%F in ("worldserver.exe" "authserver.exe" "_Server\mysql\bin\mysqld.exe" "BANCO_LIMPO\05_web_estrutura.sql" "Data\dbc") do if not exist "%SERVER_DIR%\%%~F" exit /b 25
+if errorlevel 1 (
+  echo [ERRO] A extracao foi interrompida. Execute o BAT novamente para reparar.
+  exit /b 24
+)
+for %%F in ("worldserver.exe" "authserver.exe" "_Server\mysql\bin\mysqld.exe" "BANCO_LIMPO\05_web_estrutura.sql" "Data\dbc") do if not exist "%SERVER_DIR%\%%~F" (
+  echo [ERRO] A extracao ficou incompleta. Execute o BAT novamente para reparar.
+  exit /b 25
+)
 if not exist "%SERVER_DIR%\Logs" mkdir "%SERVER_DIR%\Logs"
 
 call :generate_local_secret
@@ -149,8 +153,34 @@ call "%SECRETS_FILE%"
 powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ^
   "$files=@('%SERVER_DIR%\authserver.conf','%SERVER_DIR%\worldserver.conf'); foreach($f in $files){$c=[IO.File]::ReadAllText($f).Replace('__EMERALD_DB_PASSWORD__','%DB_PASSWORD%'); [IO.File]::WriteAllText($f,$c,[Text.UTF8Encoding]::new($false))}"
 if errorlevel 1 exit /b 28
+del /q "%SERVER_DIR%\.emerald-installing" >nul 2>&1
 
 echo [OK] Servidor verificado e extraido sem contas ou personagens privados.
+exit /b 0
+
+:prepare_server_directory
+if not exist "%SERVER_DIR%" exit /b 0
+if exist "%SERVER_DIR%\.emerald-installing" goto :remove_known_partial
+for /f "usebackq delims=" %%T in (`powershell.exe -NoLogo -NoProfile -NonInteractive -Command "Get-Date -Format yyyyMMdd-HHmmss"`) do set "PARTIAL_TIMESTAMP=%%T"
+if not defined PARTIAL_TIMESTAMP set "PARTIAL_TIMESTAMP=anterior"
+set "PARTIAL_BACKUP=%INSTALL_ROOT%\server-preservado-%PARTIAL_TIMESTAMP%"
+echo [AVISO] Foi encontrada uma pasta server sem instalacao concluida.
+echo Ela sera preservada em: %PARTIAL_BACKUP%
+move "%SERVER_DIR%" "%PARTIAL_BACKUP%" >nul
+if exist "%SERVER_DIR%" (
+  echo [ERRO] Nao foi possivel preservar a pasta incompleta.
+  exit /b 1
+)
+exit /b 0
+
+:remove_known_partial
+echo [REPARO] Removendo somente a instalacao parcial criada por este BAT...
+rmdir /s /q "%SERVER_DIR%"
+if exist "%SERVER_DIR%" (
+  echo [ERRO] Feche arquivos abertos dentro de %SERVER_DIR% e tente novamente.
+  exit /b 1
+)
+echo [OK] Instalacao parcial removida; o processo continuara automaticamente.
 exit /b 0
 
 :generate_local_secret
