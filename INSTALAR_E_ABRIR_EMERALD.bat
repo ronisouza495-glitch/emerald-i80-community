@@ -11,6 +11,7 @@ set "PAYLOAD_SHA256=6c6576bb1c6fc878842555e73b4c95de0fa3fd5900871398e6725270b84d
 set "SERVER_PACKAGE_NAME=Emerald-i80-Servidor-v1.1.0.tar.gz"
 set "SERVER_PACKAGE_URL=%EMERALD_RELEASE_BASE%/%SERVER_PACKAGE_NAME%"
 set "SERVER_PACKAGE_SHA256=405d988d14bb5a07c7b27ff5d09db5f7d3af30ab7496b1a0b15f882936ae8f17"
+set "VCREDIST_URL=https://aka.ms/highdpimfc2013x64enu"
 if not defined EMERALD_INSTALL_ROOT if exist "D:\" set "EMERALD_INSTALL_ROOT=D:\EmeraldI80"
 if not defined EMERALD_INSTALL_ROOT set "EMERALD_INSTALL_ROOT=%LOCALAPPDATA%\EmeraldI80"
 set "INSTALL_ROOT=%EMERALD_INSTALL_ROOT%"
@@ -32,6 +33,9 @@ echo.
 for %%D in ("%INSTALL_ROOT%" "%DOWNLOAD_DIR%" "%STATE_DIR%" "%LOG_DIR%") do if not exist "%%~D" mkdir "%%~D"
 
 call :ensure_payload
+if errorlevel 1 goto :failed
+
+call :ensure_vc_runtime
 if errorlevel 1 goto :failed
 
 if not exist "%INSTALL_MARKER%" (
@@ -106,6 +110,43 @@ exit /b 0
 :compare_payload_marker
 if /I "%CURRENT_SHA%"=="%PAYLOAD_SHA256%" exit /b 0
 exit /b 1
+
+:ensure_vc_runtime
+if exist "%WINDIR%\System32\msvcr120.dll" (
+  echo [OK] Microsoft Visual C++ 2013 x64 ja esta instalado.
+  exit /b 0
+)
+echo.
+echo [DEPENDENCIA] MSVCR120.dll nao foi encontrado.
+echo Baixando Microsoft Visual C++ 2013 x64 diretamente da Microsoft...
+set "VCREDIST_FILE=%DOWNLOAD_DIR%\vcredist_2013_x64.exe"
+if exist "%VCREDIST_FILE%" del /q "%VCREDIST_FILE%"
+where curl.exe >nul 2>&1
+if not errorlevel 1 (
+  curl.exe --fail --location --retry 3 --connect-timeout 20 --output "%VCREDIST_FILE%" "%VCREDIST_URL%"
+) else (
+  powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -UseBasicParsing -Uri $env:VCREDIST_URL -OutFile $env:VCREDIST_FILE"
+)
+if errorlevel 1 (
+  echo [ERRO] Nao foi possivel baixar a dependencia oficial da Microsoft.
+  exit /b 14
+)
+powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$s=Get-AuthenticodeSignature -LiteralPath $env:VCREDIST_FILE; if($s.Status -ne 'Valid' -or $s.SignerCertificate.Subject -notmatch 'Microsoft Corporation'){Write-Host '[ERRO] A assinatura digital do instalador nao e valida.'; exit 1}"
+if errorlevel 1 (
+  del /q "%VCREDIST_FILE%" >nul 2>&1
+  exit /b 15
+)
+echo [OK] Assinatura digital da Microsoft confirmada.
+echo O Windows pedira permissao para instalar a dependencia oficial.
+powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$p=Start-Process -FilePath $env:VCREDIST_FILE -ArgumentList '/install','/quiet','/norestart' -Verb RunAs -Wait -PassThru; if($p.ExitCode -in @(0,1638,3010)){exit 0}; Write-Host ('[ERRO] Instalador da Microsoft retornou o codigo {0}.' -f $p.ExitCode); exit 1"
+if errorlevel 1 exit /b 16
+if not exist "%WINDIR%\System32\msvcr120.dll" (
+  echo [ERRO] MSVCR120.dll continua ausente apos a instalacao.
+  echo Reinicie o Windows e execute este BAT novamente.
+  exit /b 17
+)
+echo [OK] Microsoft Visual C++ 2013 x64 instalado corretamente.
+exit /b 0
 
 :download_server_package
 echo.

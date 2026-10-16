@@ -15,6 +15,7 @@ Depois de baixar, abra `INSTALAR_E_ABRIR_EMERALD.bat`. Na primeira execução el
 - site responsivo para os jogadores;
 - instalador/inicializador portátil de um único BAT;
 - download do runtime com verificação SHA-256 e instalação persistente;
+- detecção e instalação assinada do Microsoft Visual C++ 2013 x64 quando `MSVCR120.dll` estiver ausente;
 - importação local sem alterar o repack original;
 - detecção automática do IP Tailscale;
 - backup automático do banco `auth` antes de alterar o realm;

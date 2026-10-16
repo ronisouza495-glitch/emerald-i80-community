@@ -2,6 +2,8 @@
 
 `INSTALAR_E_ABRIR_EMERALD.bat` é o único arquivo que o administrador precisa baixar e executar.
 
+Antes de iniciar os servidores, o BAT verifica `MSVCR120.dll`. Quando necessário, baixa o Microsoft Visual C++ 2013 x64 diretamente da Microsoft, valida a assinatura digital e solicita autorização do Windows para instalar silenciosamente.
+
 Na primeira execução, ele:
 
 1. baixa o runtime correspondente do GitHub Release;
